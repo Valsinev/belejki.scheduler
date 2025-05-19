@@ -19,6 +19,5 @@ public class Reminder {
     private boolean weekMail;
     private boolean todayMail;
 
-    // getters and setters
 }
 
