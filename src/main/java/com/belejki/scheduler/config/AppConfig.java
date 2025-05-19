@@ -12,8 +12,22 @@ public class AppConfig {
     @Value("${backend.api.url}")
     private String backendApiUrl;
 
+    @Value("${auth.username}")
+    private String authUsername;
+
+    @Value("${auth.password}")
+    private String authPassword;
+
     public String getBackendApiUrl() {
         return backendApiUrl;
+    }
+
+    public String getAuthPassword() {
+        return authPassword;
+    }
+
+    public String getAuthUsername() {
+        return authUsername;
     }
 }
 

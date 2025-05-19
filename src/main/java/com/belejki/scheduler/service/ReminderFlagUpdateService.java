@@ -15,24 +15,24 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
-public class ReminderCheckService {
+public class ReminderFlagUpdateService {
 
     private final RestTemplate restTemplate;
     private final AppConfig appConfig;
     private final AuthService authService;
 
     @Autowired
-    public ReminderCheckService(RestTemplate restTemplate, AppConfig appConfig, AuthService authService) {
+    public ReminderFlagUpdateService(RestTemplate restTemplate, AppConfig appConfig, AuthService authService) {
         this.restTemplate = restTemplate;
         this.appConfig = appConfig;
         this.authService = authService;
     }
 
-    @Scheduled(cron = "0 14 17 * * *") // Every day at midnight
+    @Scheduled(cron = "0 0 3 * * *") // Every day at midnight
     public void checkReminders() {
         String token = authService.getJwtToken();
-        String READ_URL = appConfig.getBackendApiUrl() + "/admin/reminders/flags-before"; //?page=0&size=1000"; // paging optional
-        String UPDATE_URL = appConfig.getBackendApiUrl() + "/admin/reminders/flags";
+        String READ_URL = appConfig.getBackendApiUrl() + "/schedule/reminders/flags-before"; //?page=0&size=1000"; // paging optional
+        String UPDATE_URL = appConfig.getBackendApiUrl() + "/schedule/reminders/patch";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(token);

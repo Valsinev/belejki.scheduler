@@ -26,8 +26,8 @@ public class AuthService {
     public String getJwtToken() {
         String loginUrl = appConfig.getBackendApiUrl() + "/login";
         Map<String, String> credentials = Map.of(
-                "username", "belejki.on.bg@gmail.com",
-                "password", "1V2e3n4i5o*."
+                "username", appConfig.getAuthUsername(),
+                "password", appConfig.getAuthPassword()
         );
 
         HttpHeaders headers = new HttpHeaders();

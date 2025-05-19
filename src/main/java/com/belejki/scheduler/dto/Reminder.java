@@ -7,6 +7,7 @@ import java.time.LocalDate;
 @Data
 public class Reminder {
     private Long id;
+    private String name;
     private LocalDate expiration;
     private boolean expired;
     private boolean expiresSoon;
