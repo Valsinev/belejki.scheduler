@@ -26,7 +26,7 @@ public class ReminderMailService {
         this.mailService = mailService;
     }
 
-    @Scheduled(cron = "0 30 12 * * *") // Every day at midnight
+    @Scheduled(cron = "0 30 12 * * *") // Every day at 12:30
     public void sendMailForExpiringAfterMonthReminders() {
         String token = authService.getJwtToken();
         String READ_URL = appConfig.getBackendApiUrl() + "/admin/reminders/expires-month"; //?page=0&size=1000"; // paging optional
@@ -75,7 +75,7 @@ public class ReminderMailService {
     }
 
 
-    @Scheduled(cron = "0 30 12 * * *") // Every day at midnight
+    @Scheduled(cron = "0 30 12 * * *")
     public void sendMailForExpiringAfterWeekReminders() {
         String token = authService.getJwtToken();
         String READ_URL = appConfig.getBackendApiUrl() + "/admin/reminders/expires-soon"; //?page=0&size=1000"; // paging optional
@@ -101,7 +101,7 @@ public class ReminderMailService {
         if (checkIfRemindersEmptyOrNull(reminders)) return;
 
         for (Reminder reminder: reminders) {
-            if (reminder.getUsername() != null && !reminder.isWeekMail()) {
+            if (reminder.getUsername() != null && !reminder.isWeekMail() && !reminder.isExpiresToday()) {
                 mailService.sendReminder(reminder, "week");
                 reminder.setWeekMail(true);
 
@@ -123,7 +123,7 @@ public class ReminderMailService {
     }
 
 
-    @Scheduled(cron = "0 0 8 * * *") // Every day at midnight
+    @Scheduled(cron = "0 0 7 * * *") // Every day at 7:00
     public void sendMailForExpiringTodayReminders() {
         String token = authService.getJwtToken();
         String READ_URL = appConfig.getBackendApiUrl() + "/admin/reminders/expires-today"; //?page=0&size=1000"; // paging optional

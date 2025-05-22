@@ -28,7 +28,8 @@ public class ReminderFlagUpdateService {
         this.authService = authService;
     }
 
-    @Scheduled(cron = "0 0 3 * * *") // Every day at midnight
+    //check the date of the reminders and sets flags if it expires after month, after week, or today
+    @Scheduled(cron = "0 0 3 * * *") // Every day at 3:00
     public void checkReminders() {
         String token = authService.getJwtToken();
         String READ_URL = appConfig.getBackendApiUrl() + "/schedule/reminders/flags-before"; //?page=0&size=1000"; // paging optional
@@ -101,24 +102,26 @@ public class ReminderFlagUpdateService {
                 reminder.setExpiresToday(false);
                 reminder.setExpiresSoon(false);
                 reminder.setExpiresAfterMonth(false);
-            }
-            if (expiresToday) {
+            } else if (expiresToday) {
                 reminder.setExpired(false);
                 reminder.setExpiresToday(true);
-                reminder.setExpiresSoon(false);
+                reminder.setExpiresSoon(true);
                 reminder.setExpiresAfterMonth(false);
-            }
-            if (expiresSoon) {
+            } else if (expiresSoon) {
                 reminder.setExpired(false);
                 reminder.setExpiresToday(false);
                 reminder.setExpiresSoon(true);
                 reminder.setExpiresAfterMonth(false);
-            }
-            if (expiresAfterMonth) {
+            } else if (expiresAfterMonth) {
                 reminder.setExpired(false);
                 reminder.setExpiresToday(false);
                 reminder.setExpiresSoon(false);
                 reminder.setExpiresAfterMonth(true);
+            } else {
+                reminder.setExpired(false);
+                reminder.setExpiresToday(false);
+                reminder.setExpiresSoon(false);
+                reminder.setExpiresAfterMonth(false);
             }
         }
     }
