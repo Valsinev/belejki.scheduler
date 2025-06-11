@@ -75,7 +75,7 @@ public class ReminderMailService {
     }
 
 
-    @Scheduled(cron = "0 47 12 * * *")
+    @Scheduled(cron = "0 35 20 * * *")
     public void sendMailForExpiringAfterWeekReminders() {
         String token = authService.getJwtToken();
         String READ_URL = appConfig.getBackendApiUrl() + "/admin/reminders/expires-soon"; //?page=0&size=1000"; // paging optional

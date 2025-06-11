@@ -42,7 +42,7 @@ public class ReminderFlagUpdateService {
         HttpEntity<Void> getEntity = new HttpEntity<>(headers);
 
         LocalDate today = LocalDate.now();
-        LocalDate cutoff = today.plusMonths(1).plusDays(2);
+        LocalDate cutoff = today.plusMonths(1);
 
         String urlWithParams = UriComponentsBuilder.fromHttpUrl(READ_URL)
                 .queryParam("cutoff", cutoff.toString())
