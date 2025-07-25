@@ -49,6 +49,7 @@ Before running the application, set the following environment variables:
 | `SPRING_MAIL_PASSWORD`           | The SMTP or App Password for the email account.          | —                  |
 | `SPRING_MAIL_HOST`           | The SMTP server (e.g., smtp.gmail.com for Gmail).              | —                  |
 | `SPRING_MAIL_PORT`           | (Optional) SMTP port (587 for TLS, 465 for SSL).             | —                  |
+| `DELETE_USER_AFTER_MONTHS_NOT_LOGGED`  | (Optional)   integer value that sets the deletion of not logged users    | `12`(1 year)              |
 
 
 🛡️ Gmail Setup Instructions

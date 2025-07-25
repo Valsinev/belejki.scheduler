@@ -1,15 +1,11 @@
 package com.belejki.scheduler.service;
 
 
-import com.belejki.scheduler.config.AppConfig;
 import com.belejki.scheduler.dto.Reminder;
+import com.belejki.scheduler.repository.ReminderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,76 +13,31 @@ import java.util.List;
 @Service
 public class ReminderFlagUpdateService {
 
-    private final RestTemplate restTemplate;
-    private final AppConfig appConfig;
-    private final AuthService authService;
+    private final ReminderRepository reminderRepository;
 
     @Autowired
-    public ReminderFlagUpdateService(RestTemplate restTemplate, AppConfig appConfig, AuthService authService) {
-        this.restTemplate = restTemplate;
-        this.appConfig = appConfig;
-        this.authService = authService;
+    public ReminderFlagUpdateService(ReminderRepository reminderRepository) {
+	    this.reminderRepository = reminderRepository;
     }
 
     //check the date of the reminders and sets flags if it expires after month, after week, or today
-    @Scheduled(cron = "0 0 3 * * *") // Every day at 3:00
-    public void checkReminders() {
-        String token = authService.getJwtToken();
-        String READ_URL = appConfig.getBackendApiUrl() + "/schedule/reminders/flags-before"; //?page=0&size=1000"; // paging optional
-        String UPDATE_URL = appConfig.getBackendApiUrl() + "/schedule/reminders/patch";
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(token);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<Void> getEntity = new HttpEntity<>(headers);
+    @Scheduled(cron = "0 55 22 * * *") // Every day at 3:00
+    public void updateRemindersFlags() {
 
         LocalDate today = LocalDate.now();
-        LocalDate cutoff = today.plusMonths(1);
+        LocalDate nextMonth = today.plusMonths(1);
+        //all before next month
+        List<Reminder> allExpiringBeforeNextMonth = reminderRepository.findAllExpiringBefore(nextMonth);
 
-        String urlWithParams = UriComponentsBuilder.fromHttpUrl(READ_URL)
-                .queryParam("cutoff", cutoff.toString())
-                .toUriString();
+        if (allExpiringBeforeNextMonth == null || allExpiringBeforeNextMonth.isEmpty()) return;
 
-        ResponseEntity<PagedResponse<Reminder>> response = restTemplate.exchange(
-                urlWithParams,
-                HttpMethod.GET,
-                getEntity,
-                new ParameterizedTypeReference<PagedResponse<Reminder>>() {}
-        );
+        setExpirationFlags(allExpiringBeforeNextMonth, today);
 
-        if (checkIfRetrievingIsSuccessfull(response)) return;
-
-        List<Reminder> reminders = response.getBody().getContent();
-        if (checkIfRemindersEmptyOrNull(reminders)) return;
-
-        setExpirationFlags(reminders, today);
-
-        // Prepare PUT request with headers
-        HttpEntity<List<Reminder>> putEntity = new HttpEntity<>(reminders, headers);
-        restTemplate.exchange(
-                UPDATE_URL,
-                HttpMethod.PUT,
-                putEntity,
-                Void.class
-        );
-        System.out.println("DONE UPDATING FLAGS");
+        //update the reminders
+        reminderRepository.patchAll(allExpiringBeforeNextMonth);
     }
 
-    private static boolean checkIfRetrievingIsSuccessfull(ResponseEntity<PagedResponse<Reminder>> response) {
-        if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
-            System.out.println("Failed to fetch reminders: " + response.getStatusCode());
-            return true;
-        }
-        return false;
-    }
 
-    private static boolean checkIfRemindersEmptyOrNull(List<Reminder> reminders) {
-        if (reminders == null || reminders.isEmpty()) {
-            return true;
-        }
-        return false;
-    }
 
     private static void setExpirationFlags(List<Reminder> reminders, LocalDate today) {
         for (Reminder reminder : reminders) {

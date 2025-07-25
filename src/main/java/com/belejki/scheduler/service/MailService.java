@@ -39,7 +39,7 @@ public class MailService {
                 locale
         );
 
-        sendSimpleEmail(reminder.getUsername(), subject, body);
+        sendSimpleEmail(reminder.getUserUsername(), subject, body);
 
     }
 

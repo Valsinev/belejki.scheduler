@@ -8,12 +8,12 @@ import java.time.LocalDate;
 public class Reminder {
     private Long id;
     private String name;
+    private String userUsername;
     private LocalDate expiration;
     private boolean expired;
     private boolean expiresSoon;
     private boolean expiresToday;
     private boolean expiresAfterMonth;
-    private String username;
     private String locale;
     private boolean monthMail;
     private boolean weekMail;

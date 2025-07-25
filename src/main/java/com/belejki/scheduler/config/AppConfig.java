@@ -17,6 +17,9 @@ public class AppConfig {
     @Value("${auth.password}")
     private String authPassword;
 
+    @Value("${delete.user.after.months.not.logged:12}") //default 12(1 year)
+    private int months;
+
     public String getBackendApiUrl() {
         return backendApiUrl;
     }
@@ -27,6 +30,10 @@ public class AppConfig {
 
     public String getAuthUsername() {
         return authUsername;
+    }
+
+    public int getMonths() {
+        return months;
     }
 }
 
